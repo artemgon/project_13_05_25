@@ -9,8 +9,10 @@ namespace UdpClient
 {
     public class Client
     {
-        private readonly SocketConfig _config;
-        private System.Net.Sockets.UdpClient _client; 
+        private readonly SocketConfig? _config;
+        private readonly System.Net.Sockets.UdpClient? _client;
+
+        public Client(){}
 
         public Client(SocketConfig config)
         {
@@ -20,6 +22,12 @@ namespace UdpClient
 
         public void Run()
         {
+            if (_config == null)
+            {
+                Console.WriteLine("Error: SocketConfig is not initialized.");
+                return;
+            }
+
             Console.Write("Enter server IP [127.0.0.1]: ");
             string serverIp = Console.ReadLine() ?? "";
             if (string.IsNullOrEmpty(serverIp))
@@ -54,12 +62,17 @@ namespace UdpClient
             }
             finally
             {
-                _client.Close();
+                _client?.Close();
             }
         }
 
         private void SendMessage(IPEndPoint endpoint, string message)
         {
+            if (_client == null)
+            {
+                throw new InvalidOperationException("UDP client is not initialized.");
+            }
+
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             _client.Send(bytes, bytes.Length, endpoint);
             Console.WriteLine($"Sent: {message}");
@@ -67,6 +80,11 @@ namespace UdpClient
 
         private void ReceiveResponse(ref IPEndPoint endpoint)
         {
+            if (_client == null)
+            {
+                throw new InvalidOperationException("UDP client is not initialized.");
+            }
+
             byte[] response = _client.Receive(ref endpoint);
             Console.WriteLine($"Received: {Encoding.UTF8.GetString(response)}");
         }
