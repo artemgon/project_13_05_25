@@ -1,0 +1,9 @@
+﻿namespace Shared
+{
+    public static class Constants
+    {
+       // public const int DefaultPort = ...
+       // public const int BufferSize = ...
+       // public const string DefaultServerIp = ...
+    }
+}
