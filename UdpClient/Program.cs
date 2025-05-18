@@ -6,9 +6,9 @@ namespace UdpClient
     {
         static void Main()
         {
-            //var config = new SocketConfig { Port = ... };
-            //var client = new Client(config);
-            //client.Run();
+            var config = new SocketConfig();
+            using var client = new Client(config);
+            client.Run();
         }
     }
 }

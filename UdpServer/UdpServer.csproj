@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
     <ProjectReference Include="..\UdpHelpers\UdpHelpers.csproj" />
   </ItemGroup>
 
