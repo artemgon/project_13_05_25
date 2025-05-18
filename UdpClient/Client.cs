@@ -14,7 +14,7 @@ namespace UdpClient
         public Client(SocketConfig config)
         {
             _config = config;
-            _udpClient = new System.Net.Sockets.UdpClient(); 
+            _udpClient = new System.Net.Sockets.UdpClient(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
             _udpClient.Client.ReceiveTimeout = 3000;
         }
 
@@ -25,11 +25,29 @@ namespace UdpClient
                 _config.Port
             );
 
+            try
+            {
+                byte[] testPacket = Encoding.UTF8.GetBytes("CONN_TEST");
+                _udpClient.Send(testPacket, testPacket.Length, serverEP);
+
+                var originalTimeout = _udpClient.Client.ReceiveTimeout;
+                _udpClient.Client.ReceiveTimeout = 1000;
+
+                byte[] response = _udpClient.Receive(ref serverEP);
+                Console.WriteLine("Connection established with server");
+                _udpClient.Client.ReceiveTimeout = originalTimeout;
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Cannot connect to server. Check if server is running and ports are open");
+                return;
+            }
+
             Console.WriteLine("UDP Client (press ENTER to exit)");
-            Console.WriteLine("Select the component:");
-            Console.WriteLine("1. CPU");
-            Console.WriteLine("2. GPU");
-            Console.WriteLine("3. RAM");
+            Console.WriteLine("Select the recipe:");
+            Console.WriteLine("1. Borscht");
+            Console.WriteLine("2. Tom yum");
+            Console.WriteLine("3. Caesar salad");
 
             Task.Run(() =>
             {
@@ -53,9 +71,9 @@ namespace UdpClient
 
                 string component = input switch
                 {
-                    "1" => "CPU",
-                    "2" => "GPU",
-                    "3" => "RAM",
+                    "1" => "Borscht",
+                    "2" => "Tom yum",
+                    "3" => "Caesar salad",
                     _ => input.ToUpper()
                 };
 
@@ -76,7 +94,7 @@ namespace UdpClient
                     }
                     else
                     {
-                        Console.WriteLine($"Price: {responseText}");
+                        Console.WriteLine($"Recipe: {responseText}");
                     }
                 }
                 catch (SocketException)
@@ -88,7 +106,7 @@ namespace UdpClient
 
         private string GetUserInput()
         {
-            StringBuilder input = new StringBuilder();
+            StringBuilder input = new ();
             while (_isRunning)
             {
                 var key = Console.ReadKey(true);
@@ -115,6 +133,7 @@ namespace UdpClient
         {
             _isRunning = false;
             _udpClient?.Close();
+            GC.SuppressFinalize(this);
         }
     }
 }

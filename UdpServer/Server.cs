@@ -32,11 +32,11 @@ namespace UdpServer
         {
             _clientSemaphore = new SemaphoreSlim(_maxClients, _maxClients);
             _config = config;
-            _udpServer = new UdpClient(_config.Port);
+            _udpServer = new UdpClient(new IPEndPoint(IPAddress.Any, _config.Port));
 
-            _dataStore.TryAdd("CPU", "10000");
-            _dataStore.TryAdd("GPU", "20000");
-            _dataStore.TryAdd("RAM", "4000");
+            _dataStore.TryAdd("Borscht", "Tomatoes, vinegar, cabbage and/or potatoes, mea");
+            _dataStore.TryAdd("Tom yum", "Broth, lemongrass, kaffir lime leaves, galangal, lime juice, fish sauce, chili peppers");
+            _dataStore.TryAdd("Caesar salad", "Romaine lettuce, croutons, Parmesan cheese, lemon juice, olive oil, egg yolks, Worcestershire sauce, anchovies, (optionally) Dijon mustard, black pepper");
         }
 
         public async Task StartAsync()
